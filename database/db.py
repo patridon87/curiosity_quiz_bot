@@ -26,10 +26,13 @@ async def add_question(state):
 
 
 async def get_question(message):
+
     question = cur.execute(
         'SELECT * FROM questions ORDER BY RANDOM() LIMIT 1').fetchone()
     print(question)
-    if question[1] == 'NULL':
+    if question is None:
+        await bot.send_message(message.from_user.id, 'Вопросы отсутствуют')
+    elif question[1] == 'NULL':
         await bot.send_message(message.from_user.id,
                                f'Вот ваш вопрос из категории {question[2]}:'
                                f'\n {question[3]}')
