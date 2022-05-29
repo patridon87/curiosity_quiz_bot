@@ -1,5 +1,4 @@
 import sqlite3 as sq
-from create_bot import bot
 
 
 def sql_start():
@@ -25,18 +24,6 @@ async def add_question(state):
         base.commit()
 
 
-async def get_question(message):
-
-    question = cur.execute(
+def get_question():
+    return cur.execute(
         'SELECT * FROM questions ORDER BY RANDOM() LIMIT 1').fetchone()
-    print(question)
-    if question is None:
-        await bot.send_message(message.from_user.id, 'Вопросы отсутствуют')
-    elif question[1] == 'NULL':
-        await bot.send_message(message.from_user.id,
-                               f'Вот ваш вопрос из категории {question[2]}:'
-                               f'\n {question[3]}')
-    else:
-        await bot.send_photo(message.from_user.id, question[1],
-                             f'Вот ваш вопрос из категории {question[2]}:'
-                             f'\n {question[3]}')

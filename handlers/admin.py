@@ -3,7 +3,6 @@ from aiogram.dispatcher import FSMContext, Dispatcher
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from aiogram import types
-from create_bot import dp
 from dotenv import load_dotenv
 from database import db
 
@@ -95,7 +94,7 @@ async def enter_correct_answer(message: types.Message, state: FSMContext):
     await message.reply('Вопрос добавлен!')
 
 
-async def cansel_handler(message: types.Message, state: FSMContext):
+async def canсel_handler(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         return
@@ -105,6 +104,10 @@ async def cansel_handler(message: types.Message, state: FSMContext):
 
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(new_question, commands='Вопрос', state=None)
+    dp.register_message_handler(canсel_handler, state='*', commands='отмена')
+    dp.register_message_handler(canсel_handler,
+                                Text(equals='отмена', ignore_case=True),
+                                state='*')
     dp.register_message_handler(load_photo, content_types=['photo', 'text'],
                                 state=FSMAdmin.photo)
     dp.register_message_handler(enter_category, content_types=['text'],
@@ -121,7 +124,4 @@ def register_handlers_admin(dp: Dispatcher):
                                 state=FSMAdmin.answer_4)
     dp.register_message_handler(enter_correct_answer, content_types=['text'],
                                 state=FSMAdmin.correct_answer)
-    dp.register_message_handler(cansel_handler, state='*', commands='отмена')
-    dp.register_message_handler(cansel_handler,
-                                Text(equals='отмена', ignore_case=True),
-                                state='*')
+
