@@ -1,6 +1,7 @@
 from aiogram import types, Dispatcher
 from create_bot import bot
 from keyboards import keyboard_client
+from database import db
 
 
 async def command_start(message: types.Message):
@@ -10,5 +11,10 @@ async def command_start(message: types.Message):
     )
 
 
+async def question(message: types.Message):
+    await db.get_question(message)
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(command_start, commands=['start', 'help'])
+    dp.register_message_handler(question, commands=['Получить_вопрос'])

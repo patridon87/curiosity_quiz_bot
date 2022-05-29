@@ -1,10 +1,11 @@
+import os
 from aiogram.dispatcher import FSMContext, Dispatcher
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from aiogram import types
 from create_bot import dp
 from dotenv import load_dotenv
-import os
+from database import db
 
 
 load_dotenv()
@@ -14,7 +15,7 @@ ADMIN = int(os.getenv('ADMIN'))
 
 class FSMAdmin(StatesGroup):
     photo = State()
-    theme = State()
+    category = State()
     text = State()
     answer_1 = State()
     answer_2 = State()
@@ -38,14 +39,14 @@ async def load_photo(message: types.Message, state: FSMContext):
             data['photo'] = message.photo[-1].file_id
     else:
         async with state.proxy() as data:
-            data['photo'] = None
+            data['photo'] = 'NULL'
     await FSMAdmin.next()
-    await message.reply('Выбери тему вопроса')
+    await message.reply('Выбери категорию вопроса')
 
 
-async def enter_theme(message: types.Message, state: FSMContext):
+async def enter_category(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['theme'] = message.text
+        data['category'] = message.text
     await FSMAdmin.next()
     await message.reply('Напиши текст вопроса')
 
@@ -89,6 +90,7 @@ async def enter_correct_answer(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['correct_answer'] = message.text
         print(data)
+    await db.add_question(state)
     await state.finish()
     await message.reply('Вопрос добавлен!')
 
@@ -105,8 +107,8 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(new_question, commands='Вопрос', state=None)
     dp.register_message_handler(load_photo, content_types=['photo', 'text'],
                                 state=FSMAdmin.photo)
-    dp.register_message_handler(enter_theme, content_types=['text'],
-                                state=FSMAdmin.theme)
+    dp.register_message_handler(enter_category, content_types=['text'],
+                                state=FSMAdmin.category)
     dp.register_message_handler(enter_text, content_types=['text'],
                                 state=FSMAdmin.text)
     dp.register_message_handler(enter_answer_1, content_types=['text'],
