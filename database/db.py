@@ -11,14 +11,14 @@ def sql_start():
                  'id INTEGER PRIMARY KEY NOT NULL, '
                  'photo TEXT, category TEXT, text TEXT, '
                  'answer_1 TEXT, answer_2 TEXT, answer_3 TEXT, answer_4 TEXT, '
-                 'correct_answer TEXT)')
+                 'correct_answer_number INTEGER)')
     base.commit()
 
 
 async def add_question(state):
     async with state.proxy() as data:
         cur.execute('INSERT INTO questions (photo, category, text, answer_1, '
-                    'answer_2, answer_3, answer_4, correct_answer) '
+                    'answer_2, answer_3, answer_4, correct_answer_number) '
                     'VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
                     tuple(data.values()))
         base.commit()

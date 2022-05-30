@@ -82,13 +82,12 @@ async def enter_answer_4(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['answer_4'] = message.text
     await FSMAdmin.next()
-    await message.reply('Какой вариант ответа правильный?')
+    await message.reply('Напиши номер правильного ответа')
 
 
 async def enter_correct_answer(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['correct_answer'] = message.text
-        print(data)
+        data['correct_answer_number'] = message.text
     await db.add_question(state)
     await state.finish()
     await message.reply('Вопрос добавлен!')
@@ -124,4 +123,3 @@ def register_handlers_admin(dp: Dispatcher):
                                 state=FSMAdmin.answer_4)
     dp.register_message_handler(enter_correct_answer, content_types=['text'],
                                 state=FSMAdmin.correct_answer)
-
