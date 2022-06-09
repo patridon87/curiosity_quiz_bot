@@ -3,27 +3,35 @@ import sqlite3 as sq
 
 def sql_start():
     global base, cur
-    base = sq.connect('quiz.db')
+    base = sq.connect("quiz.db")
     cur = base.cursor()
     if base:
-        print('База данных подключена')
-    base.execute('CREATE TABLE IF NOT EXISTS questions('
-                 'id INTEGER PRIMARY KEY NOT NULL, '
-                 'photo TEXT, category TEXT, text TEXT, '
-                 'answer_1 TEXT, answer_2 TEXT, answer_3 TEXT, answer_4 TEXT, '
-                 'correct_answer_number INTEGER)')
+        print("База данных подключена")
+    base.execute(
+        "CREATE TABLE IF NOT EXISTS questions("
+        "id INTEGER PRIMARY KEY NOT NULL, "
+        "photo TEXT, category TEXT, text TEXT, "
+        "answer_1 TEXT, answer_2 TEXT, answer_3 TEXT, answer_4 TEXT, "
+        "correct_answer_number INTEGER)"
+    )
     base.commit()
 
 
 async def add_question(state):
     async with state.proxy() as data:
-        cur.execute('INSERT INTO questions (photo, category, text, answer_1, '
-                    'answer_2, answer_3, answer_4, correct_answer_number) '
-                    'VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
-                    tuple(data.values()))
+        cur.execute(
+            "INSERT INTO questions (photo, category, text, answer_1, "
+            "answer_2, answer_3, answer_4, correct_answer_number) "
+            "VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+            tuple(data.values()),
+        )
         base.commit()
 
 
 def get_question():
     return cur.execute(
-        'SELECT * FROM questions ORDER BY RANDOM() LIMIT 1').fetchone()
+        "SELECT * FROM questions ORDER BY RANDOM() LIMIT 1").fetchone()
+
+
+def question_count():
+    return cur.execute("SELECT COUNT(*) FROM questions ").fetchone()
